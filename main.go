@@ -35,16 +35,15 @@ func ce(err error) {
 func main() {
 	_ = os.RemoveAll("output")
 	_ = os.MkdirAll("output", os.ModePerm)
-	img, err := imgio.Open("test/001.jpg")
+	img, err := imgio.Open("test/wee.jpg")
 	ce(err)
-	nimg := imaging.Grayscale(img)
-	log.Println(len(nimg.Pix), nimg.Rect)
+	greyimg := imaging.Grayscale(img)
 	dx, dy := 30, 10
-	log.Println(nimg.Rect.Max)
+	log.Println(greyimg.Rect.Max)
 	best := 0
-	for i := 0; i < nimg.Rect.Max.X-dx; i++ {
-		for j := 0; j < nimg.Rect.Max.Y-dy; j++ {
-			subimg := nimg.SubImage(image.Rect(i, j, i+dx, j+dy))
+	for i := 0; i < greyimg.Rect.Max.X-dx; i++ {
+		for j := 0; j < greyimg.Rect.Max.Y-dy; j++ {
+			subimg := greyimg.SubImage(image.Rect(i, j, i+dx, j+dy))
 			tot := 0
 			for x := i; x < i+dx; x++ {
 				for y := j; y < j+dy; y++ {
@@ -62,7 +61,5 @@ func main() {
 			}
 		}
 	}
-
-	err = imgio.Save("output/output.png", nimg, imgio.PNGEncoder())
-	ce(err)
+	ce(imgio.Save("output/output.png", greyimg, imgio.PNGEncoder()))
 }
