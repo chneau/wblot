@@ -6,10 +6,13 @@
 
 name=$(shell basename $(CURDIR))
 
-run: build exec clean
+run: buildPublic build exec clean
 
 exec:
 	./bin/${name}
+
+buildPublic:
+	go-bindata -pkg statik -o ./pkg/statik/statik.go ./assets
 
 build:
 	CGO_ENABLED=0 go build -o bin/${name} -ldflags '-s -w -extldflags "-static"'
@@ -27,13 +30,4 @@ deps:
 
 dev:
 	go get -u -v github.com/kardianos/govendor
-
-up-client:
-	docker build -t poeket-client-share -f client.Dockerfile .
-	docker rm -f poeket-client-share || true
-	docker run -d --restart always --name poeket-client-share --hostname share -e GOTTY_MAX_CONNECTION=2 -e GOTTY_PERMIT_ARGUMENTS=true -e GOTTY_PORT=9090 --net=host poeket-client-share
-
-up-server:
-	docker build -t poeket-server -f Dockerfile .
-	docker rm -f poeket-server || true
-	docker run -d --restart always --name poeket-server --hostname poeket-server -e POESESSID=63327098e6b044b27c67e5c16ff18a9b --net=host poeket-server
+	go get -u -v github.com/go-bindata/go-bindata/...
