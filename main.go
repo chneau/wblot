@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"image"
+	"image/draw"
 	"log"
 	"os"
 	"os/signal"
@@ -38,12 +38,20 @@ func main() {
 	img, err := imgio.Open("test/wee.jpg")
 	ce(err)
 	greyimg := imaging.Grayscale(img)
-	dx, dy := 30, 10
 	log.Println(greyimg.Rect.Max)
+	for i := 0; i < 14; i++ {
+		bestsubimg := findBest(42, 12, greyimg)
+		draw.Draw(greyimg, bestsubimg.Bounds(), image.Black, image.ZP, draw.Src)
+	}
+	ce(imgio.Save("output/output.png", greyimg, imgio.PNGEncoder()))
+}
+
+func findBest(dx, dy int, img *image.NRGBA) image.Image {
 	best := 0
-	for i := 0; i < greyimg.Rect.Max.X-dx; i++ {
-		for j := 0; j < greyimg.Rect.Max.Y-dy; j++ {
-			subimg := greyimg.SubImage(image.Rect(i, j, i+dx, j+dy))
+	bestsubimg := image.Image(nil)
+	for i := 0; i < img.Rect.Max.X-dx; i++ {
+		for j := 0; j < img.Rect.Max.Y-dy; j++ {
+			subimg := img.SubImage(image.Rect(i, j, i+dx, j+dy))
 			tot := 0
 			for x := i; x < i+dx; x++ {
 				for y := j; y < j+dy; y++ {
@@ -54,12 +62,11 @@ func main() {
 					tot += int(b)
 				}
 			}
-			if tot > best && tot > 14099277 {
-				log.Println(tot)
-				_ = imgio.Save(fmt.Sprintf("output/output%010d.png", tot), subimg, imgio.PNGEncoder())
+			if tot > best {
 				best = tot
+				bestsubimg = subimg
 			}
 		}
 	}
-	ce(imgio.Save("output/output.png", greyimg, imgio.PNGEncoder()))
+	return bestsubimg
 }
