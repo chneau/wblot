@@ -1,21 +1,17 @@
 package main
 
 import (
-	"image"
-	"image/draw"
 	"log"
 	"os"
 	"os/signal"
 
-	"github.com/disintegration/imaging"
-
-	"github.com/anthonynsimon/bild/imgio"
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
 	log.SetPrefix("[WBLOT] ")
 	log.SetOutput(os.Stdout)
-	log.SetFlags(log.LstdFlags | log.Llongfile)
+	log.SetFlags(log.Ltime | log.Lshortfile)
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	go func() {
@@ -31,42 +27,10 @@ func ce(err error) {
 	}
 }
 
-// assisted click, click somewhere and it will auto focus on best area
 func main() {
-	_ = os.RemoveAll("output")
-	_ = os.MkdirAll("output", os.ModePerm)
-	img, err := imgio.Open("test/wee.jpg")
+	r := gin.Default()
+	r.Static("/", "public")
+	log.Println("http://127.0.0.1:8080")
+	err := r.Run()
 	ce(err)
-	greyimg := imaging.Grayscale(img)
-	log.Println(greyimg.Rect.Max)
-	for i := 0; i < 14; i++ {
-		bestsubimg := findBest(42, 12, greyimg)
-		draw.Draw(greyimg, bestsubimg.Bounds(), image.Black, image.ZP, draw.Src)
-	}
-	ce(imgio.Save("output/output.png", greyimg, imgio.PNGEncoder()))
-}
-
-func findBest(dx, dy int, img *image.NRGBA) image.Image {
-	best := 0
-	bestsubimg := image.Image(nil)
-	for i := 0; i < img.Rect.Max.X-dx; i++ {
-		for j := 0; j < img.Rect.Max.Y-dy; j++ {
-			subimg := img.SubImage(image.Rect(i, j, i+dx, j+dy))
-			tot := 0
-			for x := i; x < i+dx; x++ {
-				for y := j; y < j+dy; y++ {
-					col := subimg.At(x, y)
-					r, g, b, _ := col.RGBA()
-					tot += int(r)
-					tot += int(g)
-					tot += int(b)
-				}
-			}
-			if tot > best {
-				best = tot
-				bestsubimg = subimg
-			}
-		}
-	}
-	return bestsubimg
 }
