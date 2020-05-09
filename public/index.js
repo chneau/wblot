@@ -1,23 +1,25 @@
-function setup() {
-    window.ondragover = function (e) {
-        e.preventDefault();
-        return false;
-    }
-    window.ondrop = function (e) {
-        e.preventDefault();
-        const img = new Image();
-        img.src = (window.webkitURL ? webkitURL : URL).createObjectURL(e.dataTransfer.files[0]);
-        const canvas = document.querySelector("#canvas");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const ctx = canvas.getContext("2d");
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height); // stretch img to canvas size
-        }
-    }
+function init() {
+    window.ondragover = event => event.preventDefault();
+    const image = new Image();
+    const canvas = document.querySelector("#canvas");
+    canvas.width = canvas.scrollWidth;
+    canvas.height = canvas.scrollHeight;
+    const ctx = canvas.getContext("2d");
+    window.ondrop = async event => {
+        event.preventDefault();
+        image.src = (window.webkitURL ? webkitURL : URL).createObjectURL(event.dataTransfer.files[0]);
+        await new Promise(resolve => image.onload = resolve);
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+    };
+    canvas.onclick = event => {
+        var x = (event.offsetX * (canvas.width / canvas.scrollWidth) + 0.5) | 0;
+        var y = (event.offsetY * (canvas.height / canvas.scrollHeight) + 0.5) | 0;
+        console.log(x, y);
+    };
 }
 
-window.addEventListener(`load`, function () {
-    console.log("HELLO");
-    setup();
-});
+window.onload = () => {
+    init();
+};
