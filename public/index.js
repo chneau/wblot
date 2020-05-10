@@ -1,10 +1,10 @@
 function init(canvas, image) {
-    canvas.setWidth(document.body.offsetWidth);
-    canvas.setHeight(document.querySelector(".canvas-container").offsetHeight);
+    canvas.setWidth(innerWidth);
+    canvas.setHeight(innerHeight - document.querySelector("#content").offsetHeight);
     window.ondragover = event => event.preventDefault();
     window.onresize = () => {
-        canvas.setWidth(document.body.offsetWidth);
-        canvas.setHeight(document.querySelector(".canvas-container").offsetHeight);
+        canvas.setWidth(innerWidth);
+        canvas.setHeight(innerHeight - document.querySelector("#content").offsetHeight);
         canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), { scaleX: canvas.width / image.width, scaleY: canvas.height / image.height });
     }
     window.ondrop = async event => {
@@ -14,10 +14,10 @@ function init(canvas, image) {
         canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), { scaleX: canvas.width / image.width, scaleY: canvas.height / image.height });
     };
 }
-var selection;
-function handleSelection(canvas) {
-    var isDown, origX, origY;
+function handleSelection(canvas, callback) {
+    var selection, isDown, origX, origY;
     canvas.on('mouse:down', event => {
+        if (!event.e.ctrlKey) return;
         isDown = true;
         var pointer = canvas.getPointer(event.e);
         origX = pointer.x;
@@ -43,6 +43,7 @@ function handleSelection(canvas) {
         canvas.add(selection);
     });
     canvas.on('mouse:move', event => {
+        if (!event.e.ctrlKey) return;
         if (!isDown) return;
         var pointer = canvas.getPointer(event.e);
         if (origX > pointer.x) {
@@ -55,8 +56,10 @@ function handleSelection(canvas) {
         selection.set({ height: Math.abs(origY - pointer.y) });
         canvas.renderAll();
     });
-    canvas.on('mouse:up', () => {
+    canvas.on('mouse:up', event => {
+        if (!event.e.ctrlKey) return;
         isDown = false;
+        callback(selection);
     });
 }
 
@@ -64,5 +67,13 @@ window.onload = () => {
     const canvas = new fabric.Canvas("canvas", { backgroundColor: null });
     const image = new Image();
     init(canvas, image);
-    handleSelection(canvas);
+    handleSelection(canvas, selection => {
+        const ratioWidth = canvas.width / image.width;
+        const ratioHeight = canvas.height / image.height;
+        const width = (selection.width / ratioWidth + 0.5) | 0;
+        const height = (selection.height / ratioHeight + 0.5) | 0;
+        const x = (selection.aCoords.tl.x / ratioWidth + 0.5) | 0;
+        const y = (selection.aCoords.tl.y / ratioHeight + 0.5) | 0;
+        console.log(`TopLeft: {${x}, ${y}}, Width: ${width}, Height: ${height}`);
+    });
 };
