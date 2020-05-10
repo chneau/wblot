@@ -14,7 +14,7 @@ function init(canvas, image) {
         canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), { scaleX: canvas.width / image.width, scaleY: canvas.height / image.height });
     };
 }
-function handleSelection(canvas, callback) {
+function onSelectionChange(canvas, callback) {
     var selection, isDown, origX, origY;
     canvas.on('mouse:down', event => {
         if (!event.e.ctrlKey) return;
@@ -67,7 +67,7 @@ window.onload = () => {
     const canvas = new fabric.Canvas("canvas", { backgroundColor: null });
     const image = new Image();
     init(canvas, image);
-    handleSelection(canvas, selection => {
+    onSelectionChange(canvas, selection => {
         const ratioWidth = canvas.width / image.width;
         const ratioHeight = canvas.height / image.height;
         const width = (selection.width / ratioWidth + 0.5) | 0;
