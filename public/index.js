@@ -14,6 +14,7 @@ function init(canvas, image) {
         canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), { scaleX: canvas.width / image.width, scaleY: canvas.height / image.height });
     };
 }
+
 function onSelectionChange(canvas, callback) {
     var selection, isDown, origX, origY;
     canvas.on('mouse:down', event => {
@@ -63,17 +64,28 @@ function onSelectionChange(canvas, callback) {
     });
 }
 
+function getDataUrl(img) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL('image/jpeg');
+}
+
 window.onload = () => {
     const canvas = new fabric.Canvas("canvas", { backgroundColor: null });
     const image = new Image();
     init(canvas, image);
-    onSelectionChange(canvas, selection => {
+    onSelectionChange(canvas, async selection => {
         const ratioWidth = canvas.width / image.width;
         const ratioHeight = canvas.height / image.height;
         const width = (selection.width / ratioWidth + 0.5) | 0;
         const height = (selection.height / ratioHeight + 0.5) | 0;
         const x = (selection.aCoords.tl.x / ratioWidth + 0.5) | 0;
         const y = (selection.aCoords.tl.y / ratioHeight + 0.5) | 0;
-        console.log(`TopLeft: {${x}, ${y}}, Width: ${width}, Height: ${height}`);
+        const body = { width, height, x, y, image: getDataUrl(image) };
+        const response = await (await fetch("/image", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+        console.log(response.result);
     });
 };
