@@ -1,4 +1,4 @@
-function init(canvas, image) {
+function init(canvas, image, callback) {
     canvas.setWidth(innerWidth);
     canvas.setHeight(innerHeight - document.querySelector("#content").offsetHeight);
     window.ondragover = event => event.preventDefault();
@@ -6,12 +6,14 @@ function init(canvas, image) {
         canvas.setWidth(innerWidth);
         canvas.setHeight(innerHeight - document.querySelector("#content").offsetHeight);
         canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), { scaleX: canvas.width / image.width, scaleY: canvas.height / image.height });
+        callback();
     }
     window.ondrop = async event => {
         event.preventDefault();
         image.src = (window.webkitURL ? webkitURL : URL).createObjectURL(event.dataTransfer.files[0]);
         await new Promise(resolve => image.onload = resolve);
         canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), { scaleX: canvas.width / image.width, scaleY: canvas.height / image.height });
+        callback();
     };
 }
 
@@ -73,11 +75,25 @@ function getDataUrl(img) {
     return canvas.toDataURL('image/jpeg');
 }
 
+const sleep = (ms) => (new Promise(resolve => setTimeout(resolve, ms)));
+
 window.onload = () => {
     const canvas = new fabric.Canvas("canvas", { backgroundColor: null });
     const image = new Image();
-    init(canvas, image);
+    var rectangles = [];
+    var s = null;
+    init(canvas, image, () => {
+        for (r of rectangles) {
+            canvas.remove(r);
+        }
+        if (s != null) {
+            canvas.remove(s);
+        }
+        s = null;
+        rectangles = [];
+    });
     onSelectionChange(canvas, async selection => {
+        s = selection;
         const ratioWidth = canvas.width / image.width;
         const ratioHeight = canvas.height / image.height;
         const width = (selection.width / ratioWidth + 0.5) | 0;
@@ -86,6 +102,23 @@ window.onload = () => {
         const y = (selection.aCoords.tl.y / ratioHeight + 0.5) | 0;
         const body = { width, height, x, y, image: getDataUrl(image) };
         const response = await (await fetch("/image", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
-        console.log(response.result);
+        for (r of rectangles) {
+            canvas.remove(r);
+        }
+        rectangles = [];
+        for (const point of response.result) {
+            console.log(point);
+            var rect = new fabric.Rect({
+                left: point.x * ratioWidth,
+                top: point.y * ratioHeight,
+                width: selection.width - 1,
+                height: selection.height - 1,
+                fill: '#00000000',
+                stroke: 'green',
+                strokeWidth: 1
+            });
+            rectangles.push(rect);
+            canvas.add(rect);
+        }
     });
 };

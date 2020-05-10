@@ -89,6 +89,20 @@ func modulo(template *image.Gray, mod int) []image.Point {
 	return points
 }
 
+func light(template *image.Gray, level uint8) []image.Point {
+	rect := template.Rect
+	points := []image.Point{}
+	for y := 0; y < rect.Dx(); y++ {
+		for x := 0; x < rect.Dy(); x++ {
+			if template.GrayAt(x, y).Y < level {
+				continue
+			}
+			points = append(points, image.Point{X: x, Y: y})
+		}
+	}
+	return points
+}
+
 func removeOverlapping(points []Point, ir, tr image.Rectangle) []Point {
 	img := image.NewGray(ir)
 	overlap := func(p Point) bool {
@@ -122,7 +136,9 @@ func removeOverlapping(points []Point, ir, tr image.Rectangle) []Point {
 }
 
 func templateMatching(img, template *image.Gray) []Point {
-	coorsToMatch := modulo(template, len(template.Pix)/50)
+	// coorsToMatch := modulo(template, len(template.Pix)/50)
+	coorsToMatch := light(template, 25)
+	log.Println(len(template.Pix), len(coorsToMatch))
 	limit := limiter.New(runtime.NumCPU())
 	maxy := img.Rect.Dy() - template.Rect.Dy()
 	maxx := img.Rect.Dx() - template.Rect.Dx()
@@ -174,7 +190,7 @@ func main() {
 		grayImage := Gray(img)
 		template := subGray(grayImage, image.Rect(obj.X, obj.Y, obj.X+obj.Width, obj.Y+obj.Height))
 		allPoints := templateMatching(grayImage, template)
-		filtered := removeOverlapping(allPoints, grayImage.Rect, template.Rect)
+		filtered := removeOverlapping(allPoints[:len(allPoints)/40], grayImage.Rect, template.Rect)
 		c.JSON(200, gin.H{"result": filtered})
 	})
 
