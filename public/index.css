@@ -5,12 +5,14 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    background-color: black;
+    color: white;
 }
 
 #content {
     flex-grow: 0;
 }
 
-#canvas {
+.canvas-container {
     flex-grow: 1;
 }
