@@ -89,6 +89,38 @@ func modulo(template *image.Gray, mod int) []image.Point {
 	return points
 }
 
+func removeOverlapping(points []Point, ir, tr image.Rectangle) []Point {
+	img := image.NewGray(ir)
+	overlap := func(p Point) bool {
+		i := 0
+		for x := p.X; x < p.X+tr.Max.X; x += tr.Max.X - 1 {
+			for y := p.Y; y < p.Y+tr.Max.Y; y += tr.Max.Y - 1 {
+				i++
+				if img.GrayAt(x, y).Y != 0 {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	mark := func(p Point) {
+		for x := p.X; x < p.X+tr.Max.X; x++ {
+			for y := p.Y; y < p.Y+tr.Max.Y; y++ {
+				img.SetGray(x, y, color.Gray{Y: 1})
+			}
+		}
+	}
+	result := []Point{}
+	for i := range points {
+		if overlap(points[i]) {
+			continue
+		}
+		mark(points[i])
+		result = append(result, points[i])
+	}
+	return result
+}
+
 func templateMatching(img, template *image.Gray) []Point {
 	coorsToMatch := modulo(template, len(template.Pix)/50)
 	limit := limiter.New(runtime.NumCPU())
@@ -140,8 +172,10 @@ func main() {
 			return
 		}
 		grayImage := Gray(img)
-		sub := subGray(grayImage, image.Rect(obj.X, obj.Y, obj.X+obj.Width, obj.Y+obj.Height))
-		c.JSON(200, gin.H{"result": templateMatching(grayImage, sub)})
+		template := subGray(grayImage, image.Rect(obj.X, obj.Y, obj.X+obj.Width, obj.Y+obj.Height))
+		allPoints := templateMatching(grayImage, template)
+		filtered := removeOverlapping(allPoints, grayImage.Rect, template.Rect)
+		c.JSON(200, gin.H{"result": filtered})
 	})
 
 	log.Println("http://127.0.0.1:8080")
