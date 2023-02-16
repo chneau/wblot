@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "update": "npm-check-updates --upgrade && npm update",
     "format": "prettier --write .",
-    "check": "tsc --noEmit --skipLibCheck"
+    "check": "tsc --noEmit --skipLibCheck",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "react": "^18.2.0",
