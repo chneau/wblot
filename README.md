@@ -1,2 +1,0 @@
-# wblot
-Western Blot analyser
