@@ -26,9 +26,9 @@ export const App = () => {
   const [width, setWidth] = useState(45);
   const [height, setHeight] = useState(15);
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
-  const addRectangle = (rectangle: Omit<Rectangle, "value">) => setRectangles([...rectangles, { ...rectangle, value: getPixelsValue(image, rectangle.x, rectangle.y, width, height) }]);
+  const addRectangle = (rec: Omit<Rectangle, "value">) => setRectangles([...rectangles, { ...rec, value: getPixelsValue(image, rec.x, rec.y, width, height) }]);
   const deleteRectangle = (idx: number) => setRectangles(rectangles.filter((_, i) => i !== idx));
-  const updateRectangle = (idx: number, rectangle: Omit<Rectangle, "value">) => setRectangles(rectangles.map((r, i) => (i === idx ? { ...r, ...rectangle, value: getPixelsValue(image, rectangle.x, rectangle.y, width, height) } : r)));
+  const updateRectangle = (idx: number, rec: Omit<Rectangle, "value">) => setRectangles(rectangles.map((r, i) => (i === idx ? { ...r, ...rec, value: getPixelsValue(image, rec.x, rec.y, width, height) } : r)));
   return (
     <Canvas addRectangle={addRectangle} width={width} height={height}>
       <Layer>
