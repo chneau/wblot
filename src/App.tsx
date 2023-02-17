@@ -1,8 +1,8 @@
 import Konva from "konva";
-import { useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useContext, useState } from "react";
 import { Image as KonvaImage, Layer, Stage, Text } from "react-konva";
 import { BorderRectWithText } from "./BorderRectWithText";
+import { DropzoneContext } from "./DropzoneContext";
 
 interface Rectangles {
   value: number;
@@ -10,16 +10,10 @@ interface Rectangles {
   y: number;
 }
 export const App = () => {
-  const [image, setImage] = useState<HTMLImageElement | undefined>(undefined);
+  const { image } = useContext(DropzoneContext);
   const [width, setWidth] = useState(45);
   const [height, setHeight] = useState(15);
   const [rectangles, setRectangles] = useState<Rectangles[]>([]);
-  const onDrop = (files: File[]) => {
-    const image = new Image();
-    image.src = URL.createObjectURL(files[0]);
-    image.onload = () => setImage(image);
-  };
-  const { getRootProps } = useDropzone({ onDrop, noClick: true });
   const onDragMoveHandler = (idx: number, evt: Konva.KonvaEventObject<DragEvent>) => {
     const newRectangles = [...rectangles];
     newRectangles[idx] = { ...newRectangles[idx], x: evt.target.x(), y: evt.target.y() };
@@ -42,20 +36,18 @@ export const App = () => {
     setRectangles(newRectangles);
   };
   return (
-    <div {...getRootProps()}>
-      <Stage width={window.innerWidth} height={window.innerHeight} onClick={onCanvasClick}>
-        <Layer>{image ? <KonvaImage image={image} /> : <Text text="Drag and drop a picture" x={window.innerWidth / 2} y={window.innerHeight / 2} />}</Layer>
-        {rectangles.map((rect, idx) => (
-          <BorderRectWithText //
-            key={idx}
-            width={width}
-            height={height}
-            onDragMove={(evt) => onDragMoveHandler(idx, evt)}
-            onClick={(evt) => onClickHandler(idx, evt)}
-            {...rect}
-          />
-        ))}
-      </Stage>
-    </div>
+    <Stage width={window.innerWidth} height={window.innerHeight} onClick={onCanvasClick}>
+      <Layer>{image ? <KonvaImage image={image} /> : <Text text="Drag and drop a picture" x={window.innerWidth / 2} y={window.innerHeight / 2} />}</Layer>
+      {rectangles.map((rect, idx) => (
+        <BorderRectWithText //
+          key={idx}
+          width={width}
+          height={height}
+          onDragMove={(evt) => onDragMoveHandler(idx, evt)}
+          onClick={(evt) => onClickHandler(idx, evt)}
+          {...rect}
+        />
+      ))}
+    </Stage>
   );
 };
