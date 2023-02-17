@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { Layer, Rect, Text } from "react-konva";
+import { Group, Rect, Text } from "react-konva";
 
 interface BorderRectWithText {
   value: number;
@@ -11,8 +11,8 @@ interface BorderRectWithText {
   onClick: (evt: Konva.KonvaEventObject<MouseEvent>) => void;
 }
 export const BorderRectWithText = ({ value, x, y, width, height, onDragMove, onClick }: BorderRectWithText) => (
-  <Layer x={x} y={y} onDragMove={onDragMove} onClick={onClick} draggable>
+  <Group x={x} y={y} onDragMove={onDragMove} onClick={onClick} draggable>
     <Text text={`${value}`} stroke="blue" strokeWidth={1} />
     <Rect width={width} height={height} stroke="red" strokeWidth={1} />
-  </Layer>
+  </Group>
 );
