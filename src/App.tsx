@@ -4,14 +4,31 @@ import { Canvas } from "./Canvas";
 import { DropzoneContext } from "./DropzoneContext";
 import { Rectangle, RectangleManager } from "./RectangleManager";
 
+const getPixelsValue = (image: HTMLImageElement | undefined, x: number, y: number, width: number, height: number) => {
+  if (!image) throw new Error("No image");
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No context");
+  ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  let sum = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    sum += data[i] + data[i + 1] + data[i + 2];
+  }
+  return Math.round(sum / (data.length / 4));
+};
+
 export const App = () => {
   const { image } = useContext(DropzoneContext);
   const [width, setWidth] = useState(45);
   const [height, setHeight] = useState(15);
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
-  const addRectangle = (rectangle: Rectangle) => setRectangles([...rectangles, rectangle]);
+  const addRectangle = (rectangle: Omit<Rectangle, "value">) => setRectangles([...rectangles, { ...rectangle, value: getPixelsValue(image, rectangle.x, rectangle.y, width, height) }]);
   const deleteRectangle = (idx: number) => setRectangles(rectangles.filter((_, i) => i !== idx));
-  const updateRectangle = (idx: number, rectangle: Partial<Rectangle>) => setRectangles(rectangles.map((r, i) => (i === idx ? { ...r, ...rectangle } : r)));
+  const updateRectangle = (idx: number, rectangle: Omit<Rectangle, "value">) => setRectangles(rectangles.map((r, i) => (i === idx ? { ...r, ...rectangle, value: getPixelsValue(image, rectangle.x, rectangle.y, width, height) } : r)));
   return (
     <Canvas addRectangle={addRectangle} width={width} height={height}>
       <Layer>

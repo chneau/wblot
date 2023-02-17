@@ -4,7 +4,7 @@ import { Stage } from "react-konva";
 import { Rectangle } from "./RectangleManager";
 
 interface CanvasProps {
-  addRectangle: (rectangle: Rectangle) => void;
+  addRectangle: (rectangle: Omit<Rectangle, "value">) => void;
   children: ReactElement;
   width: number;
   height: number;
@@ -19,7 +19,7 @@ export const Canvas = ({ addRectangle, children, height, width }: CanvasProps) =
     let { x, y } = pointerPosition;
     x -= width / 2;
     y -= height / 2;
-    addRectangle({ value: 0, x, y });
+    addRectangle({ x, y });
   };
   return (
     <Stage width={window.innerWidth} height={window.innerHeight} onClick={onCanvasClick}>

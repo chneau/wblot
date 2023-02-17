@@ -9,7 +9,7 @@ export interface Rectangle {
 interface RectangleManagerProps {
   rectangles: Rectangle[];
   deleteRectangle: (idx: number) => void;
-  updateRectangle: (idx: number, rectangle: Partial<Rectangle>) => void;
+  updateRectangle: (idx: number, rectangle: Omit<Rectangle, "value">) => void;
   width: number;
   height: number;
 }
