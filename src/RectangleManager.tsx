@@ -8,20 +8,21 @@ export interface Rectangle {
 }
 interface RectangleManagerProps {
   rectangles: Rectangle[];
-  setRectangles: (rectangles: Rectangle[]) => void;
+  deleteRectangle: (idx: number) => void;
+  updateRectangle: (idx: number, rectangle: Partial<Rectangle>) => void;
   width: number;
   height: number;
 }
-export const RectangleManager = ({ rectangles, setRectangles, width, height }: RectangleManagerProps) => {
+export const RectangleManager = ({ rectangles, deleteRectangle, updateRectangle, width, height }: RectangleManagerProps) => {
   const onDragMoveHandler = (idx: number, evt: Konva.KonvaEventObject<DragEvent>) => {
     const newRectangles = [...rectangles];
     newRectangles[idx] = { ...newRectangles[idx], x: evt.target.x(), y: evt.target.y() };
-    setRectangles(newRectangles);
+    updateRectangle(idx, { x: evt.target.x(), y: evt.target.y() });
   };
   const onClickHandler = (idx: number, evt: Konva.KonvaEventObject<MouseEvent>) => {
     if (!evt.evt.ctrlKey) return;
-    const newRectangles = rectangles.filter((_, i) => idx != i);
-    setRectangles(newRectangles);
+    deleteRectangle(idx);
+    evt.cancelBubble = true;
   };
   return (
     <>
