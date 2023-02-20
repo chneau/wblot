@@ -5,7 +5,7 @@ import { DropzoneContext } from "./DropzoneContext";
 import { Rectangle, RectangleManager } from "./RectangleManager";
 
 const getPixelsValue = (image: HTMLImageElement | undefined, x: number, y: number, width: number, height: number) => {
-  if (!image) throw new Error("No image");
+  if (!image) return 0;
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -15,9 +15,7 @@ const getPixelsValue = (image: HTMLImageElement | undefined, x: number, y: numbe
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
   let sum = 0;
-  for (let i = 0; i < data.length; i += 4) {
-    sum += data[i] + data[i + 1] + data[i + 2];
-  }
+  for (let i = 0; i < data.length; i += 4) sum += data[i] + data[i + 1] + data[i + 2];
   return Math.round(sum / (data.length / 4));
 };
 
