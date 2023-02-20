@@ -1,11 +1,6 @@
 import { createContext, ReactNode, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-export interface Rectangle {
-  value: number;
-  x: number;
-  y: number;
-}
 interface BlotContextProps {
   image?: HTMLImageElement;
   rectangleWidth: number;
@@ -18,7 +13,6 @@ interface BlotContextProps {
   updateRectangle: (idx: number, rec: Omit<Rectangle, "value">) => void;
 }
 export const BlotContext = createContext<BlotContextProps>({ rectangleWidth: 45, rectangleHeight: 15 } as BlotContextProps);
-
 export const BlotProvider = ({ children }: { children: ReactNode }) => {
   const [image, setImage] = useState<HTMLImageElement | undefined>(undefined);
   const [rectangleWidth, setRectangleWidth] = useState(45);
@@ -51,6 +45,12 @@ export const BlotProvider = ({ children }: { children: ReactNode }) => {
     </BlotContext.Provider>
   );
 };
+
+export interface Rectangle {
+  value: number;
+  x: number;
+  y: number;
+}
 
 const getPixelsValue = (image: HTMLImageElement | undefined, x: number, y: number, width: number, height: number) => {
   if (!image) return 0;
