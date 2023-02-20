@@ -1,15 +1,26 @@
+import { Col, Layout, Row } from "antd";
+import "antd/dist/reset.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
 import { DropzoneProvider } from "./DropzoneContext";
+import { Image } from "./Image";
+import { Table } from "./Table";
 
-const rootElement = document.getElementById("root");
-if (!rootElement) throw new Error("No root element found");
-
-createRoot(rootElement).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <DropzoneProvider>
-      <App />
+      <Layout>
+        <Layout.Content>
+          <Row style={{ minHeight: window.innerHeight }}>
+            <Col span={18}>
+              <Image />
+            </Col>
+            <Col span={6}>
+              <Table />
+            </Col>
+          </Row>
+        </Layout.Content>
+      </Layout>
     </DropzoneProvider>
   </StrictMode>
 );

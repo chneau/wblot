@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Image as KonvaImage, Layer, Text } from "react-konva";
 import { Canvas } from "./Canvas";
 import { DropzoneContext } from "./DropzoneContext";
@@ -19,20 +19,33 @@ const getPixelsValue = (image: HTMLImageElement | undefined, x: number, y: numbe
   return Math.round(sum / (data.length / 4));
 };
 
-export const App = () => {
+export const Image = () => {
   const { image } = useContext(DropzoneContext);
   const [width, setWidth] = useState(45);
   const [height, setHeight] = useState(15);
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
-  const addRectangle = (rec: Omit<Rectangle, "value">) => setRectangles([...rectangles, { ...rec, value: getPixelsValue(image, rec.x, rec.y, width, height) }]);
+  const addRectangle = (rec: Omit<Rectangle, "value">) => setRectangles([...rectangles, { ...rec, x: rec.x - width / 2, y: rec.y - height / 2, value: getPixelsValue(image, rec.x, rec.y, width, height) }]);
   const deleteRectangle = (idx: number) => setRectangles(rectangles.filter((_, i) => i !== idx));
   const updateRectangle = (idx: number, rec: Omit<Rectangle, "value">) => setRectangles(rectangles.map((r, i) => (i === idx ? { ...r, ...rec, value: getPixelsValue(image, rec.x, rec.y, width, height) } : r)));
+  const parentContainer = useRef<HTMLDivElement>(null);
+  const [parentWidth, setParentWidth] = useState(0);
+  const [parentHeight, setParentHeight] = useState(0);
+  useEffect(() => {
+    if (!parentContainer.current) return;
+    const { width, height } = parentContainer.current.getBoundingClientRect();
+    setParentWidth(width);
+    setParentHeight(height);
+  }, [parentContainer]);
   return (
-    <Canvas addRectangle={addRectangle} width={width} height={height}>
-      <Layer>
-        {image ? <KonvaImage image={image} /> : <Text text="Drag and drop a picture" x={window.innerWidth / 2} y={window.innerHeight / 2} />}
-        <RectangleManager rectangles={rectangles} updateRectangle={updateRectangle} deleteRectangle={deleteRectangle} width={width} height={height} />
-      </Layer>
-    </Canvas>
+    <div ref={parentContainer} style={{ minHeight: "100%" }}>
+      {parentHeight && parentWidth && (
+        <Canvas addRectangle={addRectangle} parentWidth={parentWidth} parentHeight={parentHeight}>
+          <Layer>
+            {image ? <KonvaImage image={image} /> : <Text text="Drag and drop a picture" x={parentWidth / 2 - 60} y={parentHeight / 2 - 5} />}
+            <RectangleManager rectangles={rectangles} updateRectangle={updateRectangle} deleteRectangle={deleteRectangle} width={width} height={height} />
+          </Layer>
+        </Canvas>
+      )}
+    </div>
   );
 };

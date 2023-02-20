@@ -1,15 +1,18 @@
 import Konva from "konva";
-import { ReactElement } from "react";
+import { KonvaEventObject } from "konva/lib/Node";
+import { ReactElement, useState } from "react";
 import { Stage } from "react-konva";
 import { Rectangle } from "./RectangleManager";
 
 interface CanvasProps {
   addRectangle: (rectangle: Omit<Rectangle, "value">) => void;
   children: ReactElement;
-  width: number;
-  height: number;
+  parentWidth: number;
+  parentHeight: number;
 }
-export const Canvas = ({ addRectangle, children, height, width }: CanvasProps) => {
+export const Canvas = ({ addRectangle, children, parentHeight, parentWidth }: CanvasProps) => {
+  const [canvasX, setCanvasX] = useState(0);
+  const [canvasY, setCanvasY] = useState(0);
   const onCanvasClick = (evt: Konva.KonvaEventObject<MouseEvent>) => {
     if (!evt.evt.ctrlKey) return;
     const stage = evt.target.getStage();
@@ -17,12 +20,14 @@ export const Canvas = ({ addRectangle, children, height, width }: CanvasProps) =
     const pointerPosition = stage.getPointerPosition();
     if (!pointerPosition) return console.error("No pointer position");
     let { x, y } = pointerPosition;
-    x -= width / 2;
-    y -= height / 2;
-    addRectangle({ x, y });
+    addRectangle({ x: x - canvasX, y: y - canvasY });
+  };
+  const onDragEnd = (evt: KonvaEventObject<DragEvent>) => {
+    setCanvasX(evt.target.x());
+    setCanvasY(evt.target.y());
   };
   return (
-    <Stage width={window.innerWidth} height={window.innerHeight} onClick={onCanvasClick}>
+    <Stage width={parentWidth} height={parentHeight} onClick={onCanvasClick} draggable onDragEnd={onDragEnd}>
       {children}
     </Stage>
   );
