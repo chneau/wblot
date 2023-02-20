@@ -1,9 +1,9 @@
 import Konva from "konva";
 import { useContext } from "react";
-import { BlotContext } from "./BlotContext";
-import { BorderRectWithText } from "./BorderRectWithText";
+import { BlotContext } from "../contexts/BlotContext";
+import { Rectangle } from "./Rectangle";
 
-export const RectangleManager = () => {
+export const Rectangles = () => {
   const { deleteRectangle, updateRectangle, rectangles, rectangleHeight, rectangleWidth } = useContext(BlotContext);
   const onDragMoveHandler = (idx: number, evt: Konva.KonvaEventObject<DragEvent>) => {
     const newRectangles = [...rectangles];
@@ -18,7 +18,7 @@ export const RectangleManager = () => {
   return (
     <>
       {rectangles.map((rect, idx) => (
-        <BorderRectWithText //
+        <Rectangle //
           key={idx}
           width={rectangleWidth}
           height={rectangleHeight}

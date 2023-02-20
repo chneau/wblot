@@ -2,7 +2,7 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactElement, useContext, useState } from "react";
 import { Stage } from "react-konva";
-import { BlotContext } from "./BlotContext";
+import { BlotContext } from "../contexts/BlotContext";
 
 interface CanvasProps {
   children: ReactElement;
