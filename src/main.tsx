@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BlotProvider } from "./contexts/BlotProvider";
 import { CanvasLayout } from "./layouts/CanvasLayout";
-import { Table } from "./layouts/TableLayout";
+import { TableLayout } from "./layouts/TableLayout";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")!).render(
               <CanvasLayout />
             </Col>
             <Col span={6}>
-              <Table />
+              <TableLayout />
             </Col>
           </Row>
         </Layout.Content>
