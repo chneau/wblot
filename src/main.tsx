@@ -2,13 +2,13 @@ import { Col, Layout, Row } from "antd";
 import "antd/dist/reset.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { DropzoneProvider } from "./DropzoneContext";
+import { BlotProvider } from "./BlotContext";
 import { Image } from "./Image";
 import { Table } from "./Table";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <DropzoneProvider>
+    <BlotProvider>
       <Layout>
         <Layout.Content>
           <Row style={{ minHeight: window.innerHeight }}>
@@ -21,6 +21,6 @@ createRoot(document.getElementById("root")!).render(
           </Row>
         </Layout.Content>
       </Layout>
-    </DropzoneProvider>
+    </BlotProvider>
   </StrictMode>
 );

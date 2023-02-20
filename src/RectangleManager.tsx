@@ -1,11 +1,7 @@
 import Konva from "konva";
+import { Rectangle } from "./BlotContext";
 import { BorderRectWithText } from "./BorderRectWithText";
 
-export interface Rectangle {
-  value: number;
-  x: number;
-  y: number;
-}
 interface RectangleManagerProps {
   rectangles: Rectangle[];
   deleteRectangle: (idx: number) => void;

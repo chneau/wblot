@@ -2,7 +2,7 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactElement, useState } from "react";
 import { Stage } from "react-konva";
-import { Rectangle } from "./RectangleManager";
+import { Rectangle } from "./BlotContext";
 
 interface CanvasProps {
   addRectangle: (rectangle: Omit<Rectangle, "value">) => void;
