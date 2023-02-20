@@ -1,16 +1,16 @@
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { ReactElement, useState } from "react";
+import { ReactElement, useContext, useState } from "react";
 import { Stage } from "react-konva";
-import { Rectangle } from "./BlotContext";
+import { BlotContext } from "./BlotContext";
 
 interface CanvasProps {
-  addRectangle: (rectangle: Omit<Rectangle, "value">) => void;
   children: ReactElement;
   parentWidth: number;
   parentHeight: number;
 }
-export const Canvas = ({ addRectangle, children, parentHeight, parentWidth }: CanvasProps) => {
+export const Canvas = ({ children, parentHeight, parentWidth }: CanvasProps) => {
+  const { addRectangle } = useContext(BlotContext);
   const [canvasX, setCanvasX] = useState(0);
   const [canvasY, setCanvasY] = useState(0);
   const onCanvasClick = (evt: Konva.KonvaEventObject<MouseEvent>) => {

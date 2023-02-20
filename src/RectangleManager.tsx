@@ -1,15 +1,10 @@
 import Konva from "konva";
-import { Rectangle } from "./BlotContext";
+import { useContext } from "react";
+import { BlotContext } from "./BlotContext";
 import { BorderRectWithText } from "./BorderRectWithText";
 
-interface RectangleManagerProps {
-  rectangles: Rectangle[];
-  deleteRectangle: (idx: number) => void;
-  updateRectangle: (idx: number, rectangle: Omit<Rectangle, "value">) => void;
-  width: number;
-  height: number;
-}
-export const RectangleManager = ({ rectangles, deleteRectangle, updateRectangle, width, height }: RectangleManagerProps) => {
+export const RectangleManager = () => {
+  const { deleteRectangle, updateRectangle, rectangles, rectangleHeight, rectangleWidth } = useContext(BlotContext);
   const onDragMoveHandler = (idx: number, evt: Konva.KonvaEventObject<DragEvent>) => {
     const newRectangles = [...rectangles];
     newRectangles[idx] = { ...newRectangles[idx], x: evt.target.x(), y: evt.target.y() };
@@ -25,8 +20,8 @@ export const RectangleManager = ({ rectangles, deleteRectangle, updateRectangle,
       {rectangles.map((rect, idx) => (
         <BorderRectWithText //
           key={idx}
-          width={width}
-          height={height}
+          width={rectangleWidth}
+          height={rectangleHeight}
           onDragMove={(evt) => onDragMoveHandler(idx, evt)}
           onClick={(evt) => onClickHandler(idx, evt)}
           {...rect}
