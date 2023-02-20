@@ -1,3 +1,4 @@
+import { Card } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Image as KonvaImage, Layer, Text } from "react-konva";
 import { Canvas } from "../components/Canvas";
@@ -16,7 +17,7 @@ export const CanvasLayout = () => {
     setParentHeight(height);
   }, [parentContainer]);
   return (
-    <div ref={parentContainer} style={{ minHeight: "100%" }}>
+    <Card title="Canvas" size="small" ref={parentContainer} style={{ minHeight: "100%" }}>
       {parentHeight && parentWidth && (
         <Canvas parentWidth={parentWidth} parentHeight={parentHeight}>
           <Layer>
@@ -25,6 +26,6 @@ export const CanvasLayout = () => {
           </Layer>
         </Canvas>
       )}
-    </div>
+    </Card>
   );
 };
