@@ -9,7 +9,7 @@ export const TableLayout = () => {
   const columns = sortedRectangles.map((_, idx) => ({ dataIndex: idx, title: idx + 1 }));
   return (
     <Card title="Data" size="small">
-      <Table size="small" pagination={false} dataSource={values} columns={columns} />
+      <Table size="small" pagination={false} dataSource={values} columns={columns} style={{ overflow: "auto" }} />
     </Card>
   );
 };
